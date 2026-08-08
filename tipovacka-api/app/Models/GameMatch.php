@@ -3,29 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GameMatch extends Model
 {
     protected $table = 'zapasy';
 
-    protected $fillable = [
-        'tym_domaci',
-        'tym_hoste',
-        'cas_vykopu',
-        'goly_domaci',
-        'goly_hoste',
-    ];
+    protected $primaryKey = 'z_id';
+
+    public $timestamps = false;
 
     protected function casts(): array
     {
         return [
-            'cas_vykopu' => 'datetime',
+            'z_datum' => 'date',
         ];
     }
 
-    public function tips(): HasMany
+    public function homeTeam(): BelongsTo
     {
-        return $this->hasMany(Tip::class, 'zapas_id');
+        return $this->belongsTo(Team::class, 'z_domaci', 'm_id');
+    }
+
+    public function awayTeam(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'z_hoste', 'm_id');
     }
 }
