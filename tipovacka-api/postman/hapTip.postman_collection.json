@@ -1,0 +1,185 @@
+{
+  "info": {
+    "name": "hapTip API",
+    "description": "Tipovačka API — register/login (Sanctum token) + zápasy + tipy.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Novak\",\n  \"email\": \"novak@example.com\",\n  \"password\": \"heslo1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.environment.set(\"token\", data.token);",
+                  "    console.log(\"Token uložen:\", data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"novak@example.com\",\n  \"password\": \"heslo1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.environment.set(\"token\", data.token);",
+                  "    console.log(\"Token uložen:\", data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get current user",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Zápasy",
+      "item": [
+        {
+          "name": "Vytvořit zápas",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/zapasy",
+              "host": ["{{base_url}}"],
+              "path": ["api", "zapasy"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tym_domaci\": \"Plzen\",\n  \"tym_hoste\": \"Ostrava\",\n  \"cas_vykopu\": \"2026-08-10 18:00:00\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json();",
+                  "    pm.environment.set(\"zapas_id\", data.data.id);",
+                  "    console.log(\"zapas_id uložen:\", data.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tipy",
+      "item": [
+        {
+          "name": "Vytvořit tip",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tipy",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tipy"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zapas_id\": {{zapas_id}},\n  \"goly_domaci\": 3,\n  \"goly_hoste\": 0\n}"
+            }
+          }
+        },
+        {
+          "name": "Vytvořit tip BEZ tokenu (očekává 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "url": {
+              "raw": "{{base_url}}/api/tipy",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tipy"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zapas_id\": {{zapas_id}},\n  \"goly_domaci\": 3,\n  \"goly_hoste\": 0\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
