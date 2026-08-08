@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MatchController;
-use App\Http\Controllers\TipController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +13,5 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/tips', [TipController::class, 'store']);
-    Route::post('/matches', [MatchController::class, 'store']);
     Route::get('/matches', [MatchController::class, 'index']);
 });

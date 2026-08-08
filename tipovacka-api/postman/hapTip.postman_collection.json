@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "hapTip API",
-    "description": "Tipovačka API — register/login (Sanctum token) + zápasy + tipy.",
+    "description": "hapTip API — register/login (Sanctum token) + matches + tips.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -41,7 +41,7 @@
                   "if (pm.response.code === 201) {",
                   "    const data = pm.response.json();",
                   "    pm.environment.set(\"token\", data.token);",
-                  "    console.log(\"Token uložen:\", data.token);",
+                  "    console.log(\"Token saved:\", data.token);",
                   "}"
                 ]
               }
@@ -75,7 +75,7 @@
                   "if (pm.response.code === 200) {",
                   "    const data = pm.response.json();",
                   "    pm.environment.set(\"token\", data.token);",
-                  "    console.log(\"Token uložen:\", data.token);",
+                  "    console.log(\"Token saved:\", data.token);",
                   "}"
                 ]
               }
@@ -99,10 +99,10 @@
       ]
     },
     {
-      "name": "Zápasy",
+      "name": "Matches",
       "item": [
         {
-          "name": "Vytvořit zápas",
+          "name": "Create match",
           "request": {
             "method": "POST",
             "header": [
@@ -110,13 +110,13 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/zapasy",
+              "raw": "{{base_url}}/api/matches",
               "host": ["{{base_url}}"],
-              "path": ["api", "zapasy"]
+              "path": ["api", "matches"]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"tym_domaci\": \"Plzen\",\n  \"tym_hoste\": \"Ostrava\",\n  \"cas_vykopu\": \"2026-08-10 18:00:00\"\n}"
+              "raw": "{\n  \"home_team\": \"Plzen\",\n  \"away_team\": \"Ostrava\",\n  \"kickoff_time\": \"2026-08-10 18:00:00\"\n}"
             }
           },
           "event": [
@@ -127,21 +127,35 @@
                 "exec": [
                   "if (pm.response.code === 201) {",
                   "    const data = pm.response.json();",
-                  "    pm.environment.set(\"zapas_id\", data.data.id);",
-                  "    console.log(\"zapas_id uložen:\", data.data.id);",
+                  "    pm.environment.set(\"match_id\", data.data.id);",
+                  "    console.log(\"match_id saved:\", data.data.id);",
                   "}"
                 ]
               }
             }
           ]
+        },
+        {
+          "name": "List matches",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/matches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "matches"]
+            }
+          }
         }
       ]
     },
     {
-      "name": "Tipy",
+      "name": "Tips",
       "item": [
         {
-          "name": "Vytvořit tip",
+          "name": "Create tip",
           "request": {
             "method": "POST",
             "header": [
@@ -149,18 +163,18 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/tipy",
+              "raw": "{{base_url}}/api/tips",
               "host": ["{{base_url}}"],
-              "path": ["api", "tipy"]
+              "path": ["api", "tips"]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"zapas_id\": {{zapas_id}},\n  \"goly_domaci\": 3,\n  \"goly_hoste\": 0\n}"
+              "raw": "{\n  \"match_id\": {{match_id}},\n  \"home_goals\": 3,\n  \"away_goals\": 0\n}"
             }
           }
         },
         {
-          "name": "Vytvořit tip BEZ tokenu (očekává 401)",
+          "name": "Create tip WITHOUT token (expect 401)",
           "request": {
             "method": "POST",
             "header": [
@@ -169,13 +183,13 @@
             ],
             "auth": { "type": "noauth" },
             "url": {
-              "raw": "{{base_url}}/api/tipy",
+              "raw": "{{base_url}}/api/tips",
               "host": ["{{base_url}}"],
-              "path": ["api", "tipy"]
+              "path": ["api", "tips"]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"zapas_id\": {{zapas_id}},\n  \"goly_domaci\": 3,\n  \"goly_hoste\": 0\n}"
+              "raw": "{\n  \"match_id\": {{match_id}},\n  \"home_goals\": 3,\n  \"away_goals\": 0\n}"
             }
           }
         }

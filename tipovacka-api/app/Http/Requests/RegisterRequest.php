@@ -23,11 +23,11 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            // "unique:users,email" checks the `email` column of the `users`
-            // table. Without this, two accounts could share an email and
-            // login() below would not know which one to check the password
-            // against.
-            'email' => 'required|email|unique:users,email',
+            // "unique:hraci,h_email" checks the `h_email` column of the
+            // `hraci` table. Without this, two accounts could share an email
+            // and login() below would not know which one to check the
+            // password against.
+            'email' => 'required|email|unique:hraci,h_email',
             // min:8 is a deliberately low bar just to have *some* rule.
             'password' => 'required|string|min:8',
         ];

@@ -13,10 +13,14 @@ class MatchResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'home_team' => $this->tym_domaci,
-            'away_team' => $this->tym_hoste,
-            'kickoff_time' => $this->cas_vykopu,
+            'id' => $this->z_id,
+            'home_team' => $this->homeTeam?->m_nazev,
+            'away_team' => $this->awayTeam?->m_nazev,
+            'date' => $this->z_datum,
+            'round' => $this->z_kolo,
+            'season' => $this->z_rocnik,
+            'home_goals' => $this->z_goly_d,
+            'away_goals' => $this->z_goly_h,
         ];
     }
 }
