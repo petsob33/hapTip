@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MatchController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TipsController;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +17,10 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/matches', [MatchController::class, 'index']);
+    Route::post('/matches', [MatchController::class,'store'])->middleware('admin');
+    Route::put('/matches/{match}', [MatchController::class, 'update'])->middleware('admin');
+    Route::get('/tips', [TipsController::class,'index']);
+    Route::post('/team', [TeamController::class,'store']);
+    Route::get('/team', [TeamController::class,'index']);
+    
 });
