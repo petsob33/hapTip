@@ -13,7 +13,7 @@ class GameMatch extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['z_domaci', 'z_hoste', 'z_datum', 'z_kolo', 'z_rocnik'];
+    protected $fillable = ['z_domaci', 'z_hoste', 'z_datum', 'z_kolo', 'z_rocnik', 'z_goly_d', 'z_goly_h'];
 
     protected function casts(): array
     {

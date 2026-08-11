@@ -22,6 +22,8 @@ class UpdateMatchRequest extends FormRequest
             'z_datum' => 'sometimes|required|date',
             'z_kolo' => 'sometimes|required|integer',
             'z_rocnik' => 'nullable|integer',
+            'z_goly_d' => 'nullable|integer|min:0',
+            'z_goly_h' => 'nullable|integer|min:0',
         ];
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TipsController;
@@ -22,5 +23,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tips', [TipsController::class,'index']);
     Route::post('/team', [TeamController::class,'store']);
     Route::get('/team', [TeamController::class,'index']);
+    Route::get('/leadboard',[LeaderboardController::class,'index']);
     
 });
