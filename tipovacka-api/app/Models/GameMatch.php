@@ -31,4 +31,11 @@ class GameMatch extends Model
     {
         return $this->belongsTo(Team::class, 'z_hoste', 'm_id');
     }
+    public function tips()
+    {
+        // 1. parametr: Třída modelu pro tipy (např. Tip::class)
+        // 2. parametr: Název sloupce v tabulce tipů, který odkazuje na zápas (např. 'match_id')
+        // 3. parametr: Název primárního klíče v tabulce zápasů (u tebe zřejmě 'z_id')
+        return $this->hasMany(Tips::class, 't_zapas', 'z_id');
+    }
 }

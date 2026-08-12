@@ -18,11 +18,14 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/matches', [MatchController::class, 'index']);
-    Route::post('/matches', [MatchController::class,'store'])->middleware('admin');
+    Route::post('/matches', [MatchController::class, 'store'])->middleware('admin');
     Route::put('/matches/{match}', [MatchController::class, 'update'])->middleware('admin');
-    Route::get('/tips', [TipsController::class,'index']);
-    Route::post('/team', [TeamController::class,'store']);
-    Route::get('/team', [TeamController::class,'index']);
-    Route::get('/leadboard',[LeaderboardController::class,'index']);
-    
+    Route::get('/untipped', [MatchController::class,'untipped']);
+    Route::get('/tips', [TipsController::class, 'index']);
+    Route::post('/tips', [TipsController::class, 'store']);
+
+    Route::post('/team', [TeamController::class, 'store']);
+    Route::get('/team', [TeamController::class, 'index']);
+    Route::get('/leadboard', [LeaderboardController::class, 'index']);
+
 });
