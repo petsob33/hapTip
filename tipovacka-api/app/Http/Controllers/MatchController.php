@@ -9,7 +9,7 @@ use App\Models\GameMatch;
 use App\Services\MatchService;
 use App\Services\TipScoringService;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Request;
 class MatchController extends Controller
 {
     public function __construct(
@@ -28,7 +28,22 @@ class MatchController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+    public function untipped(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
 
+        $matches = GameMatch::with(['homeTeam', 'awayTeam'])
+            ->where('z_datum', '>', now())
+            ->whereDoesntHave('tips', function ($query) use ($userId) {
+                $query->where('t_hrac', $userId);
+            })
+            ->orderBy('z_datum', 'asc')
+            ->paginate(10);
+
+        return MatchResource::collection($matches)
+            ->response()
+            ->setStatusCode(200);
+    }
     public function store(StoreMatchRequest $request): JsonResponse
     {
         $match = $this->matchRepository->create($request->validated());
