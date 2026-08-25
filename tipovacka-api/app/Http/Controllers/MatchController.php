@@ -64,4 +64,19 @@ class MatchController extends Controller
         return (new MatchResource($match))->response()->setStatusCode(200);
     }
 
+    public function destroy(Request $request, $id): JsonResponse
+    {
+        $match = GameMatch::findOrFail($id);
+
+        if ($match->z_hrac !== $request->user()->id) {
+            return response()->json(['message' => 'K smazání tohoto tipu nemáte oprávnění.'], 403);
+        }
+
+        $match->delete();
+
+        return response()->json(['message' => 'Tip byl úspěšně smazán.'], 200);
+        
+    }
+
+
 }

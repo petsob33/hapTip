@@ -55,13 +55,10 @@ class TipsController extends Controller
     {
         $tip = Tips::findOrFail($id);
 
-        // 2. Kontrola oprávnění: Může tip upravit tento uživatel?
         if ($tip->t_hrac !== $request->user()->id) {
             return response()->json(['message' => 'K úpravě tohoto tipu nemáte oprávnění.'], 403);
         }
 
-        // 3. Validace dat. Pravidlo 'sometimes' znamená, že se pole validuje 
-        // pouze tehdy, když je v requestu (hodí se pro částečné updaty - PATCH).
         $validatedData = $request->validate([
             't_zapas' => 'sometimes|required|integer',
             't_tip_d' => 'sometimes|required|integer',
@@ -69,7 +66,6 @@ class TipsController extends Controller
             't_rocnik' => 'sometimes|required|string',
         ]);
 
-        // 4. Aktualizace tipu
         $tip->update($validatedData);
 
         return response()->json($tip, 200);
@@ -77,21 +73,16 @@ class TipsController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        // 1. Najdeme tip
         $tip = Tips::findOrFail($id);
 
-        // 2. Kontrola oprávnění
         if ($tip->t_hrac !== $request->user()->id) {
             return response()->json(['message' => 'K smazání tohoto tipu nemáte oprávnění.'], 403);
         }
 
-        // 3. Smazání z databáze
         $tip->delete();
 
-        // 4. Odpověď pro frontend
         return response()->json(['message' => 'Tip byl úspěšně smazán.'], 200);
-        // Alternativně můžeš použít kód 204 (No Content) bez těla odpovědi:
-        // return response()->json(null, 204);
+        
     }
 
 

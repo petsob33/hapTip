@@ -5,6 +5,7 @@ use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TipsController;
+use App\Http\Controllers\ExtraTipController;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,16 +21,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/matches', [MatchController::class, 'index']);
     Route::post('/matches', [MatchController::class, 'store'])->middleware('admin');
     Route::put('/matches/{match}', [MatchController::class, 'update'])->middleware('admin');
+    Route::delete('/matches', [MatchController::class, 'destroy'])->middleware('admin');
+
     Route::get('/untipped', [MatchController::class,'untipped']);
     Route::get('/tips', [TipsController::class, 'index']);
     Route::post('/tips', [TipsController::class, 'store']);
-    Route::post('/tips', [TipsController::class, 'update']);
-
+    Route::put('/tips', [TipsController::class, 'update']);
+    Route::delete('/tips', [TipsController::class,'destory']);
     Route::get('/myTips', [TipsController::class, 'myTips']);
-
-
     Route::post('/team', [TeamController::class, 'store']);
     Route::get('/team', [TeamController::class, 'index']);
     Route::get('/leadboard', [LeaderboardController::class, 'index']);
+    Route::get('/ExtraTip', [ExtraTipController::class, 'index']);
+
+
 
 });
