@@ -23,6 +23,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/untipped', [MatchController::class,'untipped']);
     Route::get('/tips', [TipsController::class, 'index']);
     Route::post('/tips', [TipsController::class, 'store']);
+    Route::post('/tips', [TipsController::class, 'update']);
+
+    Route::get('/myTips', [TipsController::class, 'myTips']);
+
 
     Route::post('/team', [TeamController::class, 'store']);
     Route::get('/team', [TeamController::class, 'index']);
