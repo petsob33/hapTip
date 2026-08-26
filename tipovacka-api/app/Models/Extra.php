@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\ExtraType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Extra extends Model
@@ -36,5 +38,24 @@ class Extra extends Model
     public function tips(): HasMany
     {
         return $this->hasMany(ExtraTip::class, 'ex_extra', 'e_id');
+    }
+
+    public function type(): ExtraType
+    {
+        return ExtraType::fromFlags($this->e_zapas, $this->e_muzstva);
+    }
+
+    // Platí jen pro ExtraType::Team, kde e_vysledek nese ID týmu (`muzstva.m_id`).
+    public function winningTeam(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'e_vysledek', 'm_id');
+    }
+
+    public function hasResult(): bool
+    {
+        return match ($this->type()) {
+            ExtraType::Match => $this->e_goly_d !== null && $this->e_goly_h !== null,
+            ExtraType::Team, ExtraType::Free => $this->e_vysledek !== null && $this->e_vysledek !== '',
+        };
     }
 }

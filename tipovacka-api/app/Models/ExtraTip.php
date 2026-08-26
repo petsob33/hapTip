@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ExtraTip extends Model
 {
@@ -28,5 +29,16 @@ class ExtraTip extends Model
         return [
             'ex_datum' => 'date',
         ];
+    }
+
+    public function extra(): BelongsTo
+    {
+        return $this->belongsTo(Extra::class, 'ex_extra', 'e_id');
+    }
+
+    // Platí jen pro ExtraType::Team, kde ex_tip nese ID týmu (`muzstva.m_id`).
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'ex_tip', 'm_id');
     }
 }

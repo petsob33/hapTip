@@ -6,6 +6,8 @@ use App\Http\Controllers\MatchController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TipsController;
 use App\Http\Controllers\ExtraTipController;
+use App\Http\Controllers\ExtraController;
+use App\Http\Controllers\RocnikController;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +34,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/team', [TeamController::class, 'store']);
     Route::get('/team', [TeamController::class, 'index']);
     Route::get('/leadboard', [LeaderboardController::class, 'index']);
+    Route::get('/rocniky', [RocnikController::class, 'index']);
     Route::get('/ExtraTip', [ExtraTipController::class, 'index']);
+    Route::post('/ExtraTip', [ExtraTipController::class, 'store']);
+    Route::put('/ExtraTip/{id}', [ExtraTipController::class, 'update']);
+    Route::delete('/ExtraTip/{id}', [ExtraTipController::class, 'destroy']);
+
+    Route::get('/extra', [ExtraController::class, 'index']);
+    Route::post('/extra', [ExtraController::class, 'store'])->middleware('admin');
+    Route::put('/extra/{extra}', [ExtraController::class, 'update'])->middleware('admin');
+    Route::delete('/extra/{extra}', [ExtraController::class, 'destroy'])->middleware('admin');
 
 
 

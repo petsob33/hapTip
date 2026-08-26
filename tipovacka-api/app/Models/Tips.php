@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Tips extends Model
 {
@@ -32,5 +33,10 @@ class Tips extends Model
         return [
             // 't_datum' => 'datetime', // Odkomentuj, pokud chceš datum používat jako Carbon instanci
         ];
+    }
+
+    public function match(): BelongsTo
+    {
+        return $this->belongsTo(GameMatch::class, 't_zapas', 'z_id');
     }
 }

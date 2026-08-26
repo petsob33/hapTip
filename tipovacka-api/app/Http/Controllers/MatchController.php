@@ -30,7 +30,7 @@ class MatchController extends Controller
     }
     public function untipped(Request $request): JsonResponse
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()->getKey();
 
         $matches = GameMatch::with(['homeTeam', 'awayTeam'])
             ->where('z_datum', '>', now())
@@ -68,7 +68,7 @@ class MatchController extends Controller
     {
         $match = GameMatch::findOrFail($id);
 
-        if ($match->z_hrac !== $request->user()->id) {
+        if ($match->z_hrac !== $request->user()->getKey()) {
             return response()->json(['message' => 'K smazání tohoto tipu nemáte oprávnění.'], 403);
         }
 
