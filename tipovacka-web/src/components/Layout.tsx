@@ -1,105 +1,111 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { clearToken } from '../api/client'
 import { useCurrentUser } from '../api/hooks/useCurrentUser'
-import SeasonSelect from './SeasonSelect'
+import { useLeaderboard } from '../api/hooks/useLeaderboard'
+import { useSeason } from '../context/useSeason'
+import { type NavItem } from './NavItem'
+import Sidebar from './Sidebar'
+import MobileMenu from './MobileMenu'
+import { IconAdmin, IconExtra, IconMatches, IconMenu, IconTable, IconTips, IconTrophy, IconUsers } from './icons'
 
-const navItems = [
-  { to: '/zapasy', label: 'Zápasy' },
-  { to: '/moje-tipy', label: 'Moje tipy' },
-  { to: '/zebricek', label: 'Žebříček' },
+const navItems: NavItem[] = [
+  { to: '/zapasy', label: 'Zápasy', icon: IconMatches },
+  { to: '/moje-tipy', label: 'Moje tipy', icon: IconTips },
+  { to: '/ostatni-tipy', label: 'Ostatní tipy', icon: IconUsers },
+  { to: '/extra', label: 'Extra tipy', icon: IconExtra },
+  { to: '/tabulka', label: 'Tabulka ligy', icon: IconTable },
+  { to: '/zebricek', label: 'Žebříček', icon: IconTrophy },
 ]
 
 const adminNavItems = [
-  { to: '/admin/zapasy', label: 'Admin: Zápasy' },
-  { to: '/admin/extra', label: 'Admin: Extra tipy' },
-  { to: '/admin/tymy', label: 'Admin: Týmy' },
+  { to: '/admin/zapasy', label: 'Zápasy' },
+  { to: '/admin/extra', label: 'Extra tipy' },
+  { to: '/admin/tymy', label: 'Týmy' },
 ]
 
 export default function Layout() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { data: user } = useCurrentUser()
+  const { seasonId } = useSeason()
+  const { data: leaderboard } = useLeaderboard(seasonId)
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const myPointsRaw = leaderboard?.data.find((entry) => entry.h_nick === user?.h_nick)?.total_points ?? null
+  const myPoints = myPointsRaw === null ? null : Number(myPointsRaw)
+
+  const isAdmin = user?.h_admin === 'A'
+  const isAdminRoute = location.pathname.startsWith('/admin')
+  const mobileItems = isAdmin
+    ? [...navItems, { to: '/admin/zapasy', label: 'Admin', icon: IconAdmin, matchPrefix: true }]
+    : navItems
 
   function handleLogout() {
     clearToken()
     navigate('/login', { replace: true })
   }
 
-  function closeMenu() {
-    setMenuOpen(false)
-  }
-
-  const items = user?.h_admin === 'A' ? [...navItems, ...adminNavItems] : navItems
-
   return (
     <div className="min-h-screen sm:flex">
-      {/* Horní lišta jen na mobilu — od sm výšky je vidět celý postranní panel,
-          takže hamburger a jeho stav (menuOpen) tam nejsou potřeba. */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 p-4 sm:hidden">
-        <span className="text-lg font-semibold text-gray-900">Tipovačka</span>
+      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 sm:hidden">
+        <div className="flex items-center gap-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-950 text-sm font-bold text-white">
+            T
+          </span>
+          <span className="text-base font-bold text-slate-900">Tipovačka</span>
+        </div>
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label="Otevřít menu"
-          className="rounded p-2 text-gray-700 hover:bg-gray-200"
+          className="rounded-full p-2 text-slate-500 hover:bg-slate-100"
         >
-          <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <IconMenu className="size-5" />
         </button>
       </div>
 
       {menuOpen && (
-        <button
-          type="button"
-          aria-label="Zavřít menu"
-          onClick={closeMenu}
-          className="fixed inset-0 z-20 bg-black/30 sm:hidden"
+        <MobileMenu
+          navItems={mobileItems}
+          user={user}
+          points={myPoints}
+          onClose={() => setMenuOpen(false)}
+          onLogout={handleLogout}
         />
       )}
 
-      <aside
-        className={`fixed inset-y-0 left-0 z-30 flex w-64 -translate-x-full transform flex-col justify-between border-r border-gray-200 bg-gray-50 p-4 transition-transform duration-200 ease-in-out sm:static sm:z-auto sm:w-56 sm:shrink-0 sm:translate-x-0 ${
-          menuOpen ? 'translate-x-0' : ''
-        }`}
-      >
-        <div>
-          <div className="mb-4 hidden px-2 text-lg font-semibold text-gray-900 sm:block">
-            Tipovačka
-          </div>
-
-          <SeasonSelect />
-
-          <nav className="flex flex-col gap-1">
-            {items.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={closeMenu}
-                className={({ isActive }) =>
-                  `rounded px-3 py-2 text-sm font-medium ${
-                    isActive
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-700 hover:bg-gray-200'
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+      {isAdminRoute && (
+        <div className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 sm:hidden">
+          {adminNavItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold ${
+                  isActive ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-500'
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
         </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="rounded px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-200"
-        >
-          Odhlásit se
-        </button>
-      </aside>
-      <main className="flex-1 p-4 sm:p-6">
-        <Outlet />
+      )}
+
+      <Sidebar
+        navItems={navItems}
+        adminNavItems={adminNavItems}
+        isAdmin={isAdmin}
+        user={user}
+        points={myPoints}
+        onLogout={handleLogout}
+      />
+
+      <main className="flex-1 px-4 pb-8 pt-5 sm:px-8 sm:pt-8">
+        <div className="mx-auto w-full max-w-3xl">
+          <Outlet />
+        </div>
       </main>
     </div>
   )

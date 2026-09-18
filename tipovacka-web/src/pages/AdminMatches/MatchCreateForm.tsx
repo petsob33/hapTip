@@ -3,7 +3,7 @@ import { useAllTeams } from '../../api/hooks/useTeams'
 import { useCreateMatch } from '../../api/hooks/useMatches'
 import { useRocniky } from '../../api/hooks/useRocniky'
 import { applyFormError } from '../../api/errors'
-import { useSeason } from '../../context/SeasonContext'
+import { useSeason } from '../../context/useSeason'
 import { useState } from 'react'
 import type { MatchCreateInput } from '../../api/types'
 
@@ -46,20 +46,20 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mb-6 flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4"
+      className="mb-6 flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"
       noValidate
     >
-      <h2 className="text-sm font-semibold text-gray-900">Nový zápas</h2>
+      <h2 className="text-sm font-bold text-slate-900">Nový zápas</h2>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label htmlFor="z_domaci" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="z_domaci" className="mb-1.5 block text-sm font-medium text-slate-600">
             Domácí tým
           </label>
           <select
             id="z_domaci"
             disabled={teamsLoading}
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('z_domaci', { required: 'Vyberte domácí tým.' })}
           >
             <option value="">— vyberte —</option>
@@ -73,13 +73,13 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
         </div>
 
         <div>
-          <label htmlFor="z_hoste" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="z_hoste" className="mb-1.5 block text-sm font-medium text-slate-600">
             Hostující tým
           </label>
           <select
             id="z_hoste"
             disabled={teamsLoading}
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('z_hoste', { required: 'Vyberte hostující tým.' })}
           >
             <option value="">— vyberte —</option>
@@ -93,39 +93,39 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
         </div>
 
         <div>
-          <label htmlFor="z_datum" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="z_datum" className="mb-1.5 block text-sm font-medium text-slate-600">
             Datum
           </label>
           <input
             id="z_datum"
             type="date"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('z_datum', { required: 'Zadejte datum.' })}
           />
           {errors.z_datum && <p className="mt-1 text-sm text-red-600">{errors.z_datum.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="z_kolo" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="z_kolo" className="mb-1.5 block text-sm font-medium text-slate-600">
             Kolo
           </label>
           <input
             id="z_kolo"
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('z_kolo', { required: 'Zadejte kolo.' })}
           />
           {errors.z_kolo && <p className="mt-1 text-sm text-red-600">{errors.z_kolo.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="z_rocnik" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="z_rocnik" className="mb-1.5 block text-sm font-medium text-slate-600">
             Ročník
           </label>
           <select
             id="z_rocnik"
             disabled={rocnikyLoading}
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('z_rocnik', { required: 'Vyberte ročník.' })}
           >
             <option value="">— vyberte —</option>
@@ -145,14 +145,14 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          className="rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {isSubmitting ? 'Ukládám…' : 'Vytvořit zápas'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
         >
           Zrušit
         </button>

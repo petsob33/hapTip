@@ -6,7 +6,7 @@ export default function AdminRoute() {
   const { data: user, isLoading } = useCurrentUser()
 
   if (isLoading) {
-    return <p className="p-6 text-sm text-gray-500">Načítání…</p>
+    return <p className="p-6 text-sm text-slate-400">Načítání…</p>
   }
 
   if (user?.h_admin !== 'A') {

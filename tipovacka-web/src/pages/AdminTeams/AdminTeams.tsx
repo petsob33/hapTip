@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useTeams } from '../../api/hooks/useTeams'
 import Pagination from '../../components/Pagination'
+import PageHeader from '../../components/PageHeader'
+import InfoBox from '../../components/InfoBox'
 import TeamsTable from './TeamsTable'
 import TeamForm from './TeamForm'
 
@@ -15,24 +17,26 @@ export default function AdminTeams() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900">Admin: Týmy</h1>
-        {!showForm && (
-          <button
-            type="button"
-            onClick={() => setShowForm(true)}
-            className="rounded bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            Nový tým
-          </button>
-        )}
-      </div>
+      <PageHeader
+        title="Admin: Týmy"
+        action={
+          !showForm && (
+            <button
+              type="button"
+              onClick={() => setShowForm(true)}
+              className="rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
+            >
+              Nový tým
+            </button>
+          )
+        }
+      />
 
       {showForm && <TeamForm onCreated={closeForm} onCancel={closeForm} />}
 
-      {isLoading && <p className="text-sm text-gray-500">Načítání…</p>}
-      {isError && <p className="text-sm text-red-600">Týmy se nepodařilo načíst.</p>}
-      {data && data.data.length === 0 && <p className="text-sm text-gray-500">Zatím žádné týmy.</p>}
+      {isLoading && <InfoBox>Načítání…</InfoBox>}
+      {isError && <InfoBox tone="error">Týmy se nepodařilo načíst.</InfoBox>}
+      {data && data.data.length === 0 && <InfoBox>Zatím žádné týmy.</InfoBox>}
       {data && data.data.length > 0 && (
         <>
           <TeamsTable teams={data.data} />

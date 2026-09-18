@@ -1,13 +1,7 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
+import { SeasonContext } from './season-context'
 
 const STORAGE_KEY = 'season_id'
-
-interface SeasonContextValue {
-  seasonId: number | null
-  setSeasonId: (id: number) => void
-}
-
-const SeasonContext = createContext<SeasonContextValue | null>(null)
 
 function loadInitialSeasonId(): number | null {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -30,12 +24,4 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({ seasonId, setSeasonId }), [seasonId])
 
   return <SeasonContext.Provider value={value}>{children}</SeasonContext.Provider>
-}
-
-export function useSeason(): SeasonContextValue {
-  const context = useContext(SeasonContext)
-  if (!context) {
-    throw new Error('useSeason musí být použit uvnitř <SeasonProvider>.')
-  }
-  return context
 }

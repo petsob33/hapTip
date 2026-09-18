@@ -5,10 +5,8 @@ namespace App\Services;
 use App\Models\GameMatch;
 use App\Models\Tips;
 
-
 class TipScoringService
 {
-
     public function scoreMatch(GameMatch $gameMatch): void
     {
         $tips = Tips::where('t_zapas', $gameMatch->z_id)->get();

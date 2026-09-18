@@ -6,44 +6,64 @@ interface ExtraTableProps {
   onDelete: (extra: Extra) => void
 }
 
+const typeLabels: Record<Extra['e_typ'], string> = {
+  zapas: 'Skóre zápasu',
+  muzstvo: 'Vítězné mužstvo',
+  volna: 'Volná odpověď',
+}
+
+function resultLabel(extra: Extra): string {
+  if (extra.e_typ === 'zapas') {
+    return extra.e_goly_d !== null && extra.e_goly_h !== null ? `${extra.e_goly_d} : ${extra.e_goly_h}` : '—'
+  }
+  if (extra.e_typ === 'muzstvo') {
+    return extra.e_vysledek_tym?.m_nazev ?? '—'
+  }
+  return extra.e_vysledek ?? '—'
+}
+
 export default function ExtraTable({ extras, onEdit, onDelete }: ExtraTableProps) {
   return (
-    <table className="w-full border-collapse text-sm">
-      <thead>
-        <tr className="border-b border-gray-200 text-left text-gray-500">
-          <th className="py-2 pr-4 font-medium">Příloha / otázka</th>
-          <th className="py-2 pr-4 font-medium">Výsledek</th>
-          <th className="py-2 pr-4 font-medium">Ročník</th>
-          <th className="py-2 pr-4 font-medium">Platnost</th>
-          <th className="py-2 pr-4 font-medium" />
-        </tr>
-      </thead>
-      <tbody>
-        {extras.map((extra) => (
-          <tr key={extra.e_id} className="border-b border-gray-100">
-            <td className="py-2 pr-4">{extra.e_pril}</td>
-            <td className="py-2 pr-4">{extra.e_vysledek ?? '—'}</td>
-            <td className="py-2 pr-4">{extra.e_rocnik}</td>
-            <td className="py-2 pr-4">{extra.e_platnost}</td>
-            <td className="py-2 pr-4 text-right">
-              <button
-                type="button"
-                onClick={() => onEdit(extra)}
-                className="mr-3 text-sm font-medium text-gray-700 underline hover:text-gray-900"
-              >
-                Upravit
-              </button>
-              <button
-                type="button"
-                onClick={() => onDelete(extra)}
-                className="text-sm font-medium text-red-600 underline hover:text-red-800"
-              >
-                Smazat
-              </button>
-            </td>
+    <div className="overflow-x-auto rounded-3xl bg-white shadow-sm ring-1 ring-slate-900/5">
+      <table className="w-full text-sm">
+        <thead className="bg-brand-50/60">
+          <tr className="text-left text-brand-700">
+            <th className="px-5 py-3.5 font-semibold">Příloha / otázka</th>
+            <th className="px-5 py-3.5 font-semibold">Typ</th>
+            <th className="px-5 py-3.5 font-semibold">Výsledek</th>
+            <th className="px-5 py-3.5 font-semibold">Ročník</th>
+            <th className="px-5 py-3.5 font-semibold">Platnost</th>
+            <th className="px-5 py-3.5 font-semibold" />
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {extras.map((extra) => (
+            <tr key={extra.e_id} className="transition-colors hover:bg-slate-50">
+              <td className="px-5 py-3 font-medium text-slate-900">{extra.e_pril}</td>
+              <td className="px-5 py-3 text-slate-500">{typeLabels[extra.e_typ]}</td>
+              <td className="px-5 py-3 text-slate-500">{resultLabel(extra)}</td>
+              <td className="px-5 py-3 text-slate-500">{extra.e_rocnik}</td>
+              <td className="px-5 py-3 text-slate-500">{extra.e_platnost}</td>
+              <td className="px-5 py-3 text-right">
+                <button
+                  type="button"
+                  onClick={() => onEdit(extra)}
+                  className="mr-3 text-sm font-semibold text-brand-600 hover:text-brand-700"
+                >
+                  Upravit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(extra)}
+                  className="text-sm font-semibold text-red-600 hover:text-red-800"
+                >
+                  Smazat
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

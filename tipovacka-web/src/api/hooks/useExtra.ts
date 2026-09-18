@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '../client'
-import type { Extra, ExtraCreateInput, ExtraUpdateInput, Paginated } from '../types'
+import type { Extra, ExtraCreateInput, ExtraUpdateInput, PaginatedResource } from '../types'
 
-/** GET /extra — stránkovaný seznam (syrový model). */
-export function useExtras(page: number) {
+/** GET /extra — stránkovaný seznam, volitelně filtrovaný na ročník. */
+export function useExtras(page: number, rocnik?: number | null) {
   return useQuery({
-    queryKey: ['extras', page],
-    queryFn: () => apiFetch<Paginated<Extra>>(`/extra?page=${page}`),
+    queryKey: ['extras', page, rocnik ?? 'all'],
+    queryFn: () =>
+      apiFetch<PaginatedResource<Extra>>(
+        rocnik != null ? `/extra?page=${page}&rocnik=${rocnik}` : `/extra?page=${page}`,
+      ),
   })
 }
 
@@ -16,7 +19,7 @@ export function useCreateExtra() {
 
   return useMutation({
     mutationFn: (input: ExtraCreateInput) =>
-      apiFetch<Extra>('/extra', {
+      apiFetch<{ data: Extra }>('/extra', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
@@ -32,7 +35,7 @@ export function useUpdateExtra() {
 
   return useMutation({
     mutationFn: ({ id, input }: { id: number; input: ExtraUpdateInput }) =>
-      apiFetch<Extra>(`/extra/${id}`, {
+      apiFetch<{ data: Extra }>(`/extra/${id}`, {
         method: 'PUT',
         body: JSON.stringify(input),
       }),

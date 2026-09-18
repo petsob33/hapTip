@@ -14,13 +14,16 @@ class ExtraController extends Controller
 {
     public function __construct(
         private readonly ExtraScoringService $extraScoringService,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
+        $userId = $request->user()->getKey();
+
         $extras = Extra::query()
-            ->with('winningTeam')
+            ->with(['winningTeam', 'tips' => function ($query) use ($userId) {
+                $query->where('ex_hrac', $userId)->with('team');
+            }])
             ->when($request->has('rocnik'), function ($query) use ($request) {
                 $query->where('e_rocnik', $request->input('rocnik'));
             })

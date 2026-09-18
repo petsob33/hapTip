@@ -88,7 +88,7 @@ class ApiExplorerController extends Controller
                 try {
                     $formRequestClass = $type->getName();
 
-                    return $this->normalizeRules((new $formRequestClass())->rules());
+                    return $this->normalizeRules((new $formRequestClass)->rules());
                 } catch (\Throwable) {
                     return [];
                 }
@@ -161,7 +161,7 @@ class ApiExplorerController extends Controller
     }
 
     /**
-     * @param array<string, string> $rules
+     * @param  array<string, string>  $rules
      * @return array<string, mixed>
      */
     private function buildExamplePayload(array $rules): array

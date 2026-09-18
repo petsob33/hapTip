@@ -35,4 +35,25 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Football API (api-football.com / api-sports.io)
+    |--------------------------------------------------------------------------
+    |
+    | Zdroj výsledků pro ResultsImportService. `leagues` mapuje interní
+    | `rocniky.r_liga` na externí `league` ID z API-Football — jen ligy s
+    | mapováním jde importovat, ostatní ResultsImportService odmítne s
+    | čitelnou chybou. r_liga=1 je český nejvyšší fotbalový svaz (Chance
+    | Liga), viz database/database.sqlite.
+    |
+    */
+
+    'football_api' => [
+        'base_url' => env('FOOTBALL_API_BASE_URL', 'https://v3.football.api-sports.io'),
+        'key' => env('FOOTBALL_API_KEY'),
+        'leagues' => [
+            1 => env('FOOTBALL_API_LEAGUE_ID_1'),
+        ],
+    ],
+
 ];

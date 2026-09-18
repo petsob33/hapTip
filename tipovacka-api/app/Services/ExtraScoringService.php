@@ -10,7 +10,7 @@ class ExtraScoringService
 {
     public function scoreExtra(Extra $extra): void
     {
-        if (!$extra->hasResult()) {
+        if (! $extra->hasResult()) {
             return;
         }
 

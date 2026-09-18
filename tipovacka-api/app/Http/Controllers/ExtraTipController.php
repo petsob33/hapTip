@@ -29,6 +29,11 @@ class ExtraTipController extends Controller
         $request->validate(['ex_extra' => 'required|integer|exists:extra,e_id']);
 
         $extra = Extra::findOrFail($request->input('ex_extra'));
+
+        if ($extra->hasResult()) {
+            return response()->json(['message' => 'Tato extra otázka už má výsledek, tip už nelze podat.'], 422);
+        }
+
         $type = $extra->type();
 
         $validated = $request->validate($this->tipRules($type, requireTip: true));
@@ -54,6 +59,10 @@ class ExtraTipController extends Controller
 
         if ($tip->ex_hrac !== $request->user()->getKey()) {
             return response()->json(['message' => 'K úpravě tohoto tipu nemáte oprávnění.'], 403);
+        }
+
+        if ($tip->extra->hasResult()) {
+            return response()->json(['message' => 'Tato extra otázka už má výsledek, tip už nelze upravit.'], 422);
         }
 
         $type = $tip->extra->type();

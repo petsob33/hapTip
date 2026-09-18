@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -38,5 +39,10 @@ class Tips extends Model
     public function match(): BelongsTo
     {
         return $this->belongsTo(GameMatch::class, 't_zapas', 'z_id');
+    }
+
+    public function player(): BelongsTo
+    {
+        return $this->belongsTo(Player::class, 't_hrac', 'h_id');
     }
 }

@@ -20,7 +20,10 @@ class TipResource extends JsonResource
             'home_team' => $this->match?->homeTeam?->m_nazev,
             'away_team' => $this->match?->awayTeam?->m_nazev,
             'date' => $this->match?->z_datum,
+            'round' => $this->match?->z_kolo,
             't_hrac' => $this->t_hrac,
+            // Přezdívka hráče, stejné pojmenování jako LeaderboardEntry.h_nick.
+            'h_nick' => $this->player?->h_nick,
             't_tip_d' => $this->t_tip_d,
             't_tip_h' => $this->t_tip_h,
             't_body' => $this->t_body,

@@ -2,6 +2,8 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { useCreateTip } from '../../api/hooks/useTips'
 import { applyFormError } from '../../api/errors'
+import { IconTips } from '../../components/icons'
+import H2HHistory from './H2HHistory'
 import type { Match } from '../../api/types'
 
 interface UntippedMatchRowProps {
@@ -46,46 +48,61 @@ export default function UntippedMatchRow({ match }: UntippedMatchRowProps) {
 
   if (saved) {
     return (
-      <li className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-        <span>
-          {match.home_team} – {match.away_team}
+      <li className="flex items-center gap-3 rounded-3xl border border-emerald-100 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+          <IconTips className="size-4" />
         </span>
-        <span>Tip uložen ✓</span>
+        <span className="font-semibold">
+          {match.home_team} – {match.away_team}
+          <span className="ml-2 font-normal text-emerald-600">tip uložen</span>
+        </span>
       </li>
     )
   }
 
   return (
-    <li className="rounded-lg border border-gray-200 p-4">
-      <div className="mb-2 flex items-center justify-between text-sm">
-        <span className="font-medium text-gray-900">
-          {match.home_team} – {match.away_team}
+    <li className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5">
+      <div className="mb-4 flex items-center justify-between">
+        <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">
+          Kolo {match.round}
         </span>
-        <span className="text-gray-500">
-          {match.date.slice(0, 10)} · kolo {match.round}
-        </span>
+        <span className="text-xs font-medium text-slate-400">{match.date.slice(0, 10)}</span>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex items-center gap-2" noValidate>
-        <input
-          type="number"
-          min={0}
-          aria-label="Tip góly domácí"
-          className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"
-          {...register('t_tip_d', { required: true, min: 0 })}
-        />
-        <span className="text-gray-500">:</span>
-        <input
-          type="number"
-          min={0}
-          aria-label="Tip góly hosté"
-          className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"
-          {...register('t_tip_h', { required: true, min: 0 })}
-        />
+      <div className="mb-5 flex items-center justify-center gap-3 text-center">
+        <span className="flex-1 text-[15px] font-bold text-slate-900">{match.home_team}</span>
+        <span className="text-xs font-semibold uppercase text-slate-300">vs</span>
+        <span className="flex-1 text-[15px] font-bold text-slate-900">{match.away_team}</span>
+      </div>
+
+      <H2HHistory match={match} />
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col items-center gap-3 sm:flex-row"
+        noValidate
+      >
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={0}
+            aria-label="Tip góly domácí"
+            className="h-12 w-14 rounded-xl border border-slate-200 bg-slate-50 text-center text-lg font-bold text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+            {...register('t_tip_d', { required: true, min: 0 })}
+          />
+          <span className="text-lg font-bold text-slate-300">:</span>
+          <input
+            type="number"
+            min={0}
+            aria-label="Tip góly hosté"
+            className="h-12 w-14 rounded-xl border border-slate-200 bg-slate-50 text-center text-lg font-bold text-slate-900 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+            {...register('t_tip_h', { required: true, min: 0 })}
+          />
+        </div>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="ml-2 rounded bg-gray-900 px-3 py-1 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          className="w-full rounded-full bg-brand-600 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:opacity-50 sm:w-auto sm:flex-1 sm:py-2.5"
         >
           {isSubmitting ? 'Ukládám…' : 'Tipovat'}
         </button>

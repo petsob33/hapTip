@@ -1,3 +1,5 @@
+import { IconChevronLeft, IconChevronRight } from './icons'
+
 interface PaginationProps {
   currentPage: number
   lastPage: number
@@ -10,25 +12,27 @@ export default function Pagination({ currentPage, lastPage, onPageChange }: Pagi
   }
 
   return (
-    <div className="mt-4 flex items-center justify-between text-sm">
+    <div className="mt-5 flex items-center justify-between">
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
-        className="rounded border border-gray-300 px-3 py-1 disabled:opacity-40"
+        aria-label="Předchozí strana"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-900/5 disabled:opacity-30"
       >
-        Předchozí
+        <IconChevronLeft className="size-4" />
       </button>
-      <span className="text-gray-600">
+      <span className="text-sm font-medium text-slate-500">
         Strana {currentPage} z {lastPage}
       </span>
       <button
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= lastPage}
-        className="rounded border border-gray-300 px-3 py-1 disabled:opacity-40"
+        aria-label="Další strana"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-900/5 disabled:opacity-30"
       >
-        Další
+        <IconChevronRight className="size-4" />
       </button>
     </div>
   )

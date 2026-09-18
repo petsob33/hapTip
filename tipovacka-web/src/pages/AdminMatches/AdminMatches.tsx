@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { useMatches } from '../../api/hooks/useMatches'
 import Pagination from '../../components/Pagination'
+import PageHeader from '../../components/PageHeader'
+import InfoBox from '../../components/InfoBox'
 import MatchesTable from './MatchesTable'
 import MatchCreateForm from './MatchCreateForm'
 import MatchEditForm from './MatchEditForm'
+import ResultsImport from './ResultsImport'
+import ManualResultsImport from './ManualResultsImport'
 import type { Match } from '../../api/types'
 
 export default function AdminMatches() {
@@ -29,29 +33,32 @@ export default function AdminMatches() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900">Admin: Zápasy</h1>
-        {!showCreate && (
-          <button
-            type="button"
-            onClick={openCreate}
-            className="rounded bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            Nový zápas
-          </button>
-        )}
-      </div>
+      <PageHeader
+        title="Admin: Zápasy"
+        action={
+          !showCreate && (
+            <button
+              type="button"
+              onClick={openCreate}
+              className="rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
+            >
+              Nový zápas
+            </button>
+          )
+        }
+      />
+
+      <ManualResultsImport />
+      <ResultsImport />
 
       {showCreate && <MatchCreateForm onCreated={closeForms} onCancel={closeForms} />}
       {editingMatch && (
         <MatchEditForm match={editingMatch} onSaved={closeForms} onCancel={closeForms} />
       )}
 
-      {isLoading && <p className="text-sm text-gray-500">Načítání…</p>}
-      {isError && <p className="text-sm text-red-600">Zápasy se nepodařilo načíst.</p>}
-      {data && data.data.length === 0 && (
-        <p className="text-sm text-gray-500">Zatím žádné zápasy.</p>
-      )}
+      {isLoading && <InfoBox>Načítání…</InfoBox>}
+      {isError && <InfoBox tone="error">Zápasy se nepodařilo načíst.</InfoBox>}
+      {data && data.data.length === 0 && <InfoBox>Zatím žádné zápasy.</InfoBox>}
       {data && data.data.length > 0 && (
         <>
           <MatchesTable matches={data.data} onEdit={openEdit} />

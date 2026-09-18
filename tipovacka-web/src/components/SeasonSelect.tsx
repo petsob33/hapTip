@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useRocniky } from '../api/hooks/useRocniky'
-import { useSeason } from '../context/SeasonContext'
+import { useSeason } from '../context/useSeason'
 import type { Rocnik } from '../api/types'
 
 /**
@@ -24,6 +24,7 @@ function pickDefaultRocnik(rocniky: Rocnik[]): Rocnik | undefined {
     .sort((a, b) => b.r_id - a.r_id)[0]
 }
 
+/** Kompaktní pilulka pro umístění v akční části PageHeaderu, vedle titulku. */
 export default function SeasonSelect() {
   const { data: rocniky, isLoading } = useRocniky()
   const { seasonId, setSeasonId } = useSeason()
@@ -36,26 +37,22 @@ export default function SeasonSelect() {
   }, [seasonId, rocniky, setSeasonId])
 
   if (isLoading || !rocniky) {
-    return <p className="mb-4 px-2 text-xs text-gray-400">Načítání sezón…</p>
+    return <span className="text-xs text-slate-400">Načítání sezón…</span>
   }
 
   return (
-    <div className="mb-4 px-2">
-      <label htmlFor="season" className="mb-1 block text-xs font-medium text-gray-500">
-        Sezóna
-      </label>
-      <select
-        id="season"
-        value={seasonId ?? ''}
-        onChange={(event) => setSeasonId(Number(event.target.value))}
-        className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
-      >
-        {rocniky.map((r) => (
-          <option key={r.r_id} value={r.r_id}>
-            {r.r_rocnik}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      id="season"
+      aria-label="Sezóna"
+      value={seasonId ?? ''}
+      onChange={(event) => setSeasonId(Number(event.target.value))}
+      className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-brand-700 shadow-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20"
+    >
+      {rocniky.map((r) => (
+        <option key={r.r_id} value={r.r_id} className="text-slate-900">
+          {r.r_rocnik}
+        </option>
+      ))}
+    </select>
   )
 }

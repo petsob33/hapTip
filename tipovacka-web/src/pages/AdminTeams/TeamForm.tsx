@@ -34,71 +34,71 @@ export default function TeamForm({ onCreated, onCancel }: TeamFormProps) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mb-6 flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4"
+      className="mb-6 flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-900/5"
       noValidate
     >
-      <h2 className="text-sm font-semibold text-gray-900">Nový tým</h2>
+      <h2 className="text-sm font-bold text-slate-900">Nový tým</h2>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label htmlFor="m_nazev" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="m_nazev" className="mb-1.5 block text-sm font-medium text-slate-600">
             Název
           </label>
           <input
             id="m_nazev"
             type="text"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('m_nazev', { required: 'Zadejte název.' })}
           />
           {errors.m_nazev && <p className="mt-1 text-sm text-red-600">{errors.m_nazev.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="m_mesto" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="m_mesto" className="mb-1.5 block text-sm font-medium text-slate-600">
             Město
           </label>
           <input
             id="m_mesto"
             type="text"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('m_mesto', { required: 'Zadejte město.' })}
           />
           {errors.m_mesto && <p className="mt-1 text-sm text-red-600">{errors.m_mesto.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="m_znak" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="m_znak" className="mb-1.5 block text-sm font-medium text-slate-600">
             Znak (URL/název souboru)
           </label>
           <input
             id="m_znak"
             type="text"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('m_znak', { required: 'Zadejte znak.' })}
           />
           {errors.m_znak && <p className="mt-1 text-sm text-red-600">{errors.m_znak.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="m_liga" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="m_liga" className="mb-1.5 block text-sm font-medium text-slate-600">
             Liga
           </label>
           <input
             id="m_liga"
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('m_liga', { required: 'Zadejte ligu.' })}
           />
           {errors.m_liga && <p className="mt-1 text-sm text-red-600">{errors.m_liga.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="m_platnost" className="mb-1 block text-sm text-gray-700">
+          <label htmlFor="m_platnost" className="mb-1.5 block text-sm font-medium text-slate-600">
             Platnost (A/N)
           </label>
           <select
             id="m_platnost"
-            className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             {...register('m_platnost', { required: true })}
           >
             <option value="A">A</option>
@@ -113,14 +113,14 @@ export default function TeamForm({ onCreated, onCancel }: TeamFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          className="rounded-full bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {isSubmitting ? 'Ukládám…' : 'Vytvořit tým'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
         >
           Zrušit
         </button>

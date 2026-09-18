@@ -46,9 +46,8 @@ class AuthService
         // Some rows in `hraci` predate this app and still store their
         // original plain-text password (e.g. 'rambo159') instead of a
         // bcrypt hash. Hash::check() throws on a value it doesn't recognise
-        // as its own format, so those legacy passwords are treated as a
-        // non-match up front rather than passed to it — same end result
-        // (login rejected) without the crash.
+        // as its own format, so those are compared directly with
+        // hash_equals() instead — see the else branch below.
         $hasBcryptPassword = $player && Str::startsWith($player->h_pasw, '$2y$');
 
         // Hash::check() re-hashes the given plain password with the same
@@ -57,10 +56,29 @@ class AuthService
         // against it. We check user-exists and password-matches in a single
         // condition and throw the SAME error for both, so a client can't
         // use this endpoint to enumerate which emails have an account.
-        if (! $hasBcryptPassword || ! Hash::check($data['password'], $player->h_pasw)) {
-            throw ValidationException::withMessages([
-                'email' => ['Invalid credentials.'],
-            ]);
+        if ($hasBcryptPassword) {
+            if (! Hash::check($data['password'], $player->h_pasw)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Invalid credentials.'],
+                ]);
+            }
+        } else {
+            // Legacy account: h_pasw is still the original plain-text
+            // password from before this app existed. hash_equals() gives a
+            // timing-safe direct comparison. On a match we write the same
+            // plain password back — the Player model's 'hashed' cast on
+            // h_pasw bcrypts it automatically on save (identical to how
+            // register() gets its initial hash) — so every login after this
+            // one goes through the Hash::check() branch above like a normal
+            // account.
+            if (! $player || ! hash_equals((string) $player->h_pasw, $data['password'])) {
+                throw ValidationException::withMessages([
+                    'email' => ['Invalid credentials.'],
+                ]);
+            }
+
+            $player->h_pasw = $data['password'];
+            $player->save();
         }
 
         // Login issues a brand new token rather than reusing an old one.

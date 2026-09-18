@@ -12,9 +12,7 @@ use Illuminate\Http\JsonResponse;
 // connect "an HTTP request came in" to "the auth business logic runs".
 class AuthController extends Controller
 {
-    public function __construct(private readonly AuthService $authService)
-    {
-    }
+    public function __construct(private readonly AuthService $authService) {}
 
     public function register(RegisterRequest $request): JsonResponse
     {

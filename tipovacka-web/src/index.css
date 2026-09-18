@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eef0ff;
+  --color-brand-100: #e0e3fe;
+  --color-brand-200: #c5c9fb;
+  --color-brand-300: #a3a8f7;
+  --color-brand-400: #7c82f1;
+  --color-brand-500: #5a5fe8;
+  --color-brand-600: #4448d4;
+  --color-brand-700: #3739ab;
+  --color-brand-800: #2c2d85;
+  --color-brand-900: #1f2062;
+  --color-brand-950: #12133d;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: #f4f5fb;
+  color: #14152f;
+}
+
+/* Skryje spinner šipky u number inputů (tipování skóre) — na mobilu zabírají
+   místo a nejsou potřeba, ovládá se přímo číselnou klávesnicí. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}

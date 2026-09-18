@@ -241,6 +241,86 @@ Odpovědi endpointů níže procházejí přes `App\Http\Resources\MatchResource
 
 Dále: kontrola vlastnictví `$match->z_hrac !== $request->user()->id` odkazuje na sloupec `z_hrac`, který není v `$fillable` modelu `GameMatch` ani jinde v kódu zmíněný u tabulky `zapasy` – TODO: ověřit, zda tento sloupec v tabulce reálně existuje.
 
+### `GET /api/matches/import-results/preview`
+
+- **Auth:** ano, **role: admin**
+- **Query parametry:** `rocnik` (povinné, `rocniky.r_id`)
+- **Request body:** žádný
+- **Popis:** stáhne z API-Football (`App\Services\FootballApiClient`) dohrané zápasy pro ligu/sezónu napárovanou na daný ročník (`config('services.football_api.leagues')`, klíčováno podle `rocniky.r_liga`) a napáruje je podle jmen týmů + data na interní zápasy v tomto ročníku, kterým ještě chybí `z_goly_d`/`z_goly_h`. Nic nezapisuje, jen vrací návrh (`App\Services\ResultsImportService::preview()`).
+- **Odpověď `200 OK`:**
+
+```json
+{
+  "matched": [
+    {
+      "match_id": 42,
+      "round": 5,
+      "home_team": "AC Sparta Praha",
+      "away_team": "SK Slavia Praha",
+      "date": "2026-08-30",
+      "current_home_goals": null,
+      "current_away_goals": null,
+      "proposed_home_goals": 2,
+      "proposed_away_goals": 1,
+      "external_fixture_id": 123456,
+      "match_confidence": 87.5
+    }
+  ],
+  "unmatched": [
+    {
+      "match_id": 43,
+      "round": 5,
+      "home_team": "FK Jablonec",
+      "away_team": "FC Zlín",
+      "date": "2026-08-31"
+    }
+  ]
+}
+```
+
+- **Chyby `422 Unprocessable Entity`:** `{"errors": {"rocnik": ["…"]}}` — když pro `rocniky.r_liga` daného ročníku chybí namapované externí ID ligy (`FOOTBALL_API_LEAGUE_ID_*` v `.env`), chybí `FOOTBALL_API_KEY`, nebo volání API-Football selže.
+
+### `POST /api/matches/import-results/apply`
+
+- **Auth:** ano, **role: admin**
+- **Request body:**
+
+| Pole | Typ | Povinné | Pravidla |
+|---|---|---|---|
+| `rocnik` | integer | ano | `rocniky.r_id` |
+| `match_ids` | integer[] | ano | každé ID musí existovat v `zapasy.z_id` |
+
+- **Popis:** znovu natáhne návrh jako `GET .../preview` (mezistav preview se neukládá) a pro `match_ids`, které se v něm napárovaly, zapíše `z_goly_d`/`z_goly_h` přes `MatchService::update()` a spustí `TipScoringService::scoreMatch()` — stejný efekt jako ruční `PUT /matches/{match}`. ID, která se v novém návrhu nenapárují (např. výsledek mezitím zadal admin ručně), se tiše přeskočí.
+- **Odpověď `200 OK`:** `{"updated": [42]}` — pole ID skutečně zapsaných zápasů.
+
+### `POST /api/matches/import-results/manual-preview`
+
+- **Auth:** ano, **role: admin**
+- **Popis:** alternativa k `.../preview` bez závislosti na API-Football (`App\Services\ManualResultsImportService`) — admin vloží výsledky jako prostý text, jeden zápas na řádek: `Domácí - Hosté 2:1` (oddělovač týmů `-`/`–`/`vs`, skóre vždy jen `:`). Řádky, které neodpovídají vzoru, se vrátí v `parse_errors`, ne jako chyba requestu. Páruje se jen podle jmen týmů (bez data v textu) mezi zápasy ročníku, kterým ještě chybí výsledek.
+- **Request body:**
+
+| Pole | Typ | Povinné |
+|---|---|---|
+| `rocnik` | integer | ano (`rocniky.r_id`) |
+| `text` | string | ano |
+
+- **Odpověď `200 OK`:** stejný tvar `matched`/`unmatched` jako `GET .../preview` (bez `external_fixture_id`), navíc:
+
+```json
+{
+  "matched": [...],
+  "unmatched": [...],
+  "parse_errors": [{"line": 3, "text": "tenhle řádek nejde přečíst"}]
+}
+```
+
+### `POST /api/matches/import-results/manual-apply`
+
+- **Auth:** ano, **role: admin**
+- **Request body:** jako `manual-preview` (`rocnik`, `text`) plus `match_ids` (integer[], `zapasy.z_id`).
+- **Popis:** znovu naparsuje `text` a pro potvrzené `match_ids` zapíše výsledek + spustí `TipScoringService::scoreMatch()`, stejně jako `.../apply`.
+- **Odpověď `200 OK`:** `{"updated": [42]}`.
+
 ---
 
 ## Tipy (`/api/tips`, `/api/myTips`)
@@ -403,6 +483,70 @@ Vrací syrový model `App\Models\Team` (tabulka `muzstva`).
 ```
 
 - **Poznámka:** `data` je surový výsledek `DB::raw` agregace (SUM), není stránkovaný. `total_points` může být `null` (ne `0`) u hráče bez jediného obodovaného tipu — ověřeno proti API, SQL `SUM()` přes samé `NULL` hodnoty vrací `NULL`.
+
+---
+
+## Statistiky hráčů (`/api/players`)
+
+### `GET /api/players/{player}/stats`
+
+- **Auth:** ano
+- **Path parametry:** `player` – `hraci.h_id` (route model binding)
+- **Query parametry:** `rocnik` (filtr na `t_rocnik`, bez něj počítá napříč všemi ročníky), `posledni` (kolik posledních obodovaných kol vrátit v `form`, výchozí `5`)
+- **Request body:** žádný
+- **Popis:** vše se počítá jen z tipů, které už mají vyplněný `t_body` (tedy `TipScoringService::scoreMatch()` už zápas obodoval) – kola/tipy čekající na výsledek se do žádného z čísel nepočítají.
+- **Odpověď `200 OK`:**
+
+```json
+{
+  "rocnik": "33",
+  "player": { "h_id": 3, "h_nick": "honza" },
+  "rounds_played": 12,
+  "total_points": 34,
+  "avg_points_per_round": 2.83,
+  "form": [
+    { "round": 8, "points": 1 },
+    { "round": 9, "points": 5 },
+    { "round": 10, "points": 0 },
+    { "round": 11, "points": 6 },
+    { "round": 12, "points": 3 }
+  ],
+  "accuracy": {
+    "tips_scored": 12,
+    "exact": 3,
+    "exact_pct": 25.0,
+    "outcome": 5,
+    "outcome_pct": 41.7,
+    "miss": 4,
+    "miss_pct": 33.3
+  }
+}
+```
+
+- `form` je chronologicky od nejstaršího k nejnovějšímu kolu (pro vykreslení trendu), obsahuje `SUM(t_body)` za všechny tipy hráče v daném kole (jedno kolo může mít víc zápasů).
+- `accuracy` rozděluje jednotlivé obodované tipy (ne kola) podle výsledku bodování v `TipScoringService`: `exact` = přesné skóre (`t_body === 5`), `outcome` = trefený výsledek bez přesného skóre (`t_body === 1`), `miss` = mimo (`t_body === 0`). `*_pct` jsou zaokrouhlené na 1 desetinné místo, `null` když `tips_scored === 0`. Pozor: pokud by se `t_body` v budoucnu počítalo i jinak (např. joker – viz `t_joker` v `TipResource`, `TipScoringService` ho zatím vůbec nepoužívá), součet `exact + outcome + miss` nemusí sedět na `tips_scored`.
+- Hráč bez jediného obodovaného tipu v dané sezóně: `rounds_played` a `total_points` `0`, `avg_points_per_round` `null`, `form` `[]`, `accuracy` samé nuly/`null` procenta.
+
+### `GET /api/players/h2h`
+
+- **Auth:** ano
+- **Query parametry:** `player1`, `player2` (oba povinné, `integer`, musí existovat v `hraci.h_id`, `player2` musí být jiné než `player1`), `rocnik` (nepovinné, bez něj napříč všemi ročníky)
+- **Request body:** žádný
+- **Popis:** srovnává jen zápasy, které oba hráči obodovaně otipovali (průnik podle `t_zapas`) – zápas otipovaný jen jedním z nich se do srovnání nepočítá.
+- **Odpověď `200 OK`:**
+
+```json
+{
+  "rocnik": "33",
+  "player1": { "h_id": 3, "h_nick": "honza" },
+  "player2": { "h_id": 7, "h_nick": "petr" },
+  "matches_compared": 10,
+  "wins": { "player1": 4, "player2": 3, "draws": 3 },
+  "total_points": { "player1": 22, "player2": 19 }
+}
+```
+
+- **Chybové odpovědi:** `422` při stejném ID pro `player1`/`player2`, chybějícím/neexistujícím hráči.
 
 ---
 
