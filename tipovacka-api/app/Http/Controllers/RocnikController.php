@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Rocnik;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RocnikController extends Controller
 {
@@ -15,5 +16,17 @@ class RocnikController extends Controller
         $rocniky = Rocnik::orderBy('r_id')->get();
 
         return response()->json($rocniky, 200);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'r_rocnik' => 'required|string|unique:rocniky,r_rocnik',
+            'r_liga' => 'required|integer',
+        ]);
+
+        $rocnik = Rocnik::create($validatedData);
+
+        return response()->json($rocnik, 201);
     }
 }

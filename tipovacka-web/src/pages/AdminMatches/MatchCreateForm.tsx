@@ -6,6 +6,7 @@ import { applyFormError } from '../../api/errors'
 import { useSeason } from '../../context/useSeason'
 import { useState } from 'react'
 import type { MatchCreateInput } from '../../api/types'
+import NewRocnikForm from './NewRocnikForm'
 
 interface MatchCreateFormProps {
   onCreated: () => void
@@ -18,12 +19,19 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
   const createMatch = useCreateMatch()
   const { seasonId } = useSeason()
   const [formError, setFormError] = useState<string | null>(null)
+  const [showNewRocnik, setShowNewRocnik] = useState(false)
   const {
     register,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<MatchCreateInput>({ defaultValues: { z_rocnik: seasonId ?? undefined } })
+
+  async function onRocnikCreated(rocnikId: number) {
+    setValue('z_rocnik', rocnikId)
+    setShowNewRocnik(false)
+  }
 
   async function onSubmit(values: MatchCreateInput) {
     setFormError(null)
@@ -119,9 +127,18 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
         </div>
 
         <div>
-          <label htmlFor="z_rocnik" className="mb-1.5 block text-sm font-medium text-slate-600">
-            Ročník
-          </label>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label htmlFor="z_rocnik" className="block text-sm font-medium text-slate-600">
+              Ročník
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowNewRocnik((v) => !v)}
+              className="text-xs font-semibold text-brand-600 hover:text-brand-700"
+            >
+              {showNewRocnik ? 'Zrušit' : '+ Nový ročník'}
+            </button>
+          </div>
           <select
             id="z_rocnik"
             disabled={rocnikyLoading}
@@ -138,6 +155,8 @@ export default function MatchCreateForm({ onCreated, onCancel }: MatchCreateForm
           {errors.z_rocnik && <p className="mt-1 text-sm text-red-600">{errors.z_rocnik.message}</p>}
         </div>
       </div>
+
+      {showNewRocnik && <NewRocnikForm onCreated={onRocnikCreated} onCancel={() => setShowNewRocnik(false)} />}
 
       {formError && <p className="text-sm text-red-600">{formError}</p>}
 

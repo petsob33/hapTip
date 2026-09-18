@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/players/h2h', [PlayerStatsController::class, 'h2h']);
     Route::get('/players/{player}/stats', [PlayerStatsController::class, 'show']);
     Route::get('/rocniky', [RocnikController::class, 'index']);
+    Route::post('/rocniky', [RocnikController::class, 'store'])->middleware('admin');
     Route::get('/ExtraTip', [ExtraTipController::class, 'index']);
     Route::post('/ExtraTip', [ExtraTipController::class, 'store']);
     Route::put('/ExtraTip/{id}', [ExtraTipController::class, 'update']);

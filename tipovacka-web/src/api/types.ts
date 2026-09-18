@@ -19,6 +19,12 @@ export interface Rocnik {
   r_liga: number
 }
 
+/** Vstup pro POST /rocniky (admin). */
+export interface RocnikCreateInput {
+  r_rocnik: string
+  r_liga: number
+}
+
 // ---------------------------------------------------------------------------
 // Auth / uživatel
 // ---------------------------------------------------------------------------
